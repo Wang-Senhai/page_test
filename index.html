@@ -1,0 +1,1993 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>中国电影可视化</title>
+            <script type="text/javascript" src="https://assets.pyecharts.org/assets/echarts.min.js"></script>
+       		 <script type="text/javascript" src="https://assets.pyecharts.org/assets/maps/world.js"></script>
+       		  <script type="text/javascript" src="https://assets.pyecharts.org/assets/echarts-wordcloud.min.js"></script>
+        	<style type="text/css">
+        	html {
+			    font-family: sans-serif;
+			    -webkit-text-size-adjust: 100%;
+			    -ms-text-size-adjust: 100%;
+			}
+			body{
+margin: 0px;
+padding: 0px;
+}
+        	
+        	#header {
+
+
+    background-image: url(https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=277237570,297498983&fm=26&gp=0.jpg);
+    background-size: cover;
+    padding: 60px 80px;
+    position: relative;
+    
+    box-shadow: 0px 3px 3px rgba(20, 20, 20, 0.3) inset;
+}
+#footer {
+    text-align: center;
+
+    color: white;
+    background-color: #333;
+    padding: 30px;
+    font-size: 15px;
+}
+
+	#chart{
+
+		padding: 60px 80px;
+
+
+}
+ 
+    #word{
+    	padding: 60px 0px;
+    	    color: #363636;
+    text-align: justify;
+    word-wrap: break-word;
+    word-break: break-word;
+    letter-spacing: normal;
+    font-size: 16px;
+    line-height: 30px;
+    line-height: 32px;
+    width: 900px;
+
+    }
+	
+        </style>
+
+	
+</head>
+<body>
+<div id="header">
+	
+      
+        <h1>中国电影<span style="font-family:JetLinkMediumOldStamp451548;color:#fff;position:relative;top:-1px;font-size:35px;"><span style="margin-left:10px;margin-right:5px;">数据</span>可视化</span></h1>
+
+        <h2 style="color: #fff">研究背景</h2>
+        <div>
+        	<p>	
+		随着电影行业的蓬勃发展，中国已成全球第一大电影市场，早在前年，国内电影银幕总数就已超越北美，成为全球拥有银幕数量最多的电影市场。面对如此巨大的电影市场，国内电影工作者就不能再以原来粗犷地模式制作电影，而要以市场为导向，以数据为导向，以用户需求为导向来精准化制作，投放电影，使电影的用户口碑和票房都能兼顾。</p>
+		<p>	
+		目前互联网上大量的电影的数据，例如电影票房榜，电影评分等，大多都只是以文字形式分布，繁杂且很不直观，如果能将这些海量数据爬取下来，进行数据分析，数据可视化，从而就可以帮助电影从业人员清楚认识如今电影市场现状，用户喜爱的电影方向和类型，为他们下一步拍摄和投放电影做出指导和参考。
+		</p>
+
+		而另一方面，中国有近5亿影迷和电影爱好者，他们对电影有着浓厚兴趣。通过清晰直观的电影分析图表，榜单也可以帮助他们快速筛选好电影。
+
+		<p>基于这两大群体的需求，我就想通过此次毕业设计来将中国互联网上的电影票房，评分等电影数据进行爬取汇总，按照不同分析维度进行数据分析，将电影数据可视化，从而帮助读者更好地认识中国电影。
+	</div>
+	  <h2 style="color: #fff">技术原理</h2>
+        <p>电影原始数据来自于中国权威的票房数据库——中国票房数据库网和最大的电影信息平台<a href="http://movie.douban.com/" target="_blank">豆瓣电影</a>，使用python的<a href="https://docs.python.org/2/library/urllib2.html" target="_blank">Requests</a>包以及使用相关代理的方式<span class="em">爬取</span>数据、使用<a href="http://www.crummy.com/software/BeautifulSoup/bs4/doc/" target="_blank">BeautifulSoup</a>、正则表达式re、lxml包完成<span class="em">数据解析</span>，通过MongoDB数据库对爬取的电影数据进行存储，利用对MongoDB的增，删，改，查等操作对数据进行<span class="em">预处理</span>和<span class="em">清洗</span>。</p>
+        <p>最终一共获取了1995-2019年国内上映电影<span class="em">3740</span>条电影票房数据，3327条豆瓣电影数据，每条记录包含以下<span class="em">12</span>个字段：电影ID、电影名、链接、缩略图、评分、导演、演员、类型、上映国家、语言、上映时间、时长、票房信息。</p>
+        <p>在此基础上，使用<a href="http://echarts.baidu.com/" target="_blank">PyEcharts包</a>调用百度Echarts可视化库进行简单的数据可视化，从而完整地展示网络上电影数据<span class="em">采集</span>、<span class="em">存储</span>、<span class="em">处理</span>和<span class="em">使用</span>四个环节所涉及的技术链。</p>
+    </div>
+
+
+
+<!--  以上为不可修改部分-->
+
+<div id="chart">
+ <div id="5b21b317b3a245a494e36b9b734fb97a" style="width:900px; height:500px;"></div>
+    <script>
+        var chart_5b21b317b3a245a494e36b9b734fb97a = echarts.init(
+            document.getElementById('5b21b317b3a245a494e36b9b734fb97a'), 'white', {renderer: 'canvas'});
+        var option_5b21b317b3a245a494e36b9b734fb97a = {
+    "color": [
+        "#c23531",
+        "#2f4554",
+        "#61a0a8",
+        "#d48265",
+        "#749f83",
+        "#ca8622",
+        "#bda29a",
+        "#6e7074",
+        "#546570",
+        "#c4ccd3",
+        "#f05b72",
+        "#ef5b9c",
+        "#f47920",
+        "#905a3d",
+        "#fab27b",
+        "#2a5caa",
+        "#444693",
+        "#726930",
+        "#b2d235",
+        "#6d8346",
+        "#ac6767",
+        "#1d953f",
+        "#6950a1",
+        "#918597"
+    ],
+    "series": [
+        {
+            "type": "map",
+            "name": "\u7535\u5f71\u6570\u91cf",
+            "label": {
+                "show": false,
+                "position": "top",
+                "fontSize": 12
+            },
+            "mapType": "world",
+            "data": [
+                {
+                    "name": "China",
+                    "value": 1891
+                },
+                {
+                    "name": "United States",
+                    "value": 950
+                },
+                {
+                    "name": "India",
+                    "value": 56
+                },
+                {
+                    "name": "Russia",
+                    "value": 39
+                },
+                {
+                    "name": "Korea",
+                    "value": 300
+                },
+                {
+                    "name": "Japan",
+                    "value": 250
+                },
+                {
+                    "name": "United Kingdom",
+                    "value": 100
+                },
+                {
+                    "name": "France",
+                    "value": 50
+                },
+                {
+                    "name": "Canada",
+                    "value": 35
+                },
+                {
+                    "name": "Australia",
+                    "value": 20
+                }
+            ],
+            "roam": true,
+            "showLegendSymbol": true,
+            "rippleEffect": {
+                "show": true,
+                "brushType": "stroke",
+                "scale": 2.5,
+                "period": 4
+            }
+        }
+    ],
+    "legend": [
+        {
+            "data": [
+                "\u7535\u5f71\u6570\u91cf"
+            ],
+            "selected": {
+                "\u7535\u5f71\u6570\u91cf": true
+            },
+            "show": true
+        }
+    ],
+    "tooltip": {
+        "show": true,
+        "trigger": "item",
+        "triggerOn": "mousemove|click",
+        "axisPointer": {
+            "type": "line"
+        },
+        "textStyle": {
+            "fontSize": 14
+        },
+        "borderWidth": 0
+    },
+    "title": [
+        {
+            "text": "\u56fd\u5185\u4e0a\u6620\u7535\u5f71\u5206\u5e03",
+            "subtext": "\u4e0a\u6b21\u722c\u866b\u65f6\u95f4:2019-05-27 09:10:02  \u7535\u5f71\u91cf:3740"
+        }
+    ],
+    "visualMap": {
+        "type": "continuous",
+        "min": 0,
+        "max": 2000,
+        "inRange": {
+            "color": [
+                "#50a3ba",
+                "#eac763",
+                "#d94e5d"
+            ]
+        },
+        "calculable": true,
+        "splitNumber": 5,
+        "orient": "vertical",
+        "showLabel": true
+    }
+};
+        chart_5b21b317b3a245a494e36b9b734fb97a.setOption(option_5b21b317b3a245a494e36b9b734fb97a);
+    </script>
+<br/>      
+<div id="word">此图为在国内上映电影分布的分布情况，通过鼠标点击国家区域，将会看见不同国家在中国上映的电影分布情况，目前国内上映电影数量最多的国家依次是中国和美国，说明国内电影市场对中国和美国上映电影非常热衷，对非洲国家以及中亚电影接触较少。</div>
+
+
+
+  <div id="f6378c533b434c6394018d5d74e0107c" style="width:900px; height:500px;"></div>
+    <script>
+        var chart_f6378c533b434c6394018d5d74e0107c = echarts.init(
+            document.getElementById('f6378c533b434c6394018d5d74e0107c'), 'white', {renderer: 'canvas'});
+        var option_f6378c533b434c6394018d5d74e0107c = {
+    "color": [
+        "#c23531",
+        "#2f4554",
+        "#61a0a8",
+        "#d48265",
+        "#749f83",
+        "#ca8622",
+        "#bda29a",
+        "#6e7074",
+        "#546570",
+        "#c4ccd3",
+        "#f05b72",
+        "#ef5b9c",
+        "#f47920",
+        "#905a3d",
+        "#fab27b",
+        "#2a5caa",
+        "#444693",
+        "#726930",
+        "#b2d235",
+        "#6d8346",
+        "#ac6767",
+        "#1d953f",
+        "#6950a1",
+        "#918597"
+    ],
+    "series": [
+        {
+            "type": "bar",
+            "name": "\u7535\u5f71\u7968\u623f(\u4ebf)",
+            "data": [
+                24.26,
+                25.27,
+                26.49,
+                30.75,
+                33.71,
+                33.9,
+                36.22,
+                42.04999999,
+                46.18,
+                56.39
+            ],
+            "barCategoryGap": "20%",
+            "label": {
+                "show": true,
+                "position": "right",
+                "fontSize": 12
+            },
+            "rippleEffect": {
+                "show": true,
+                "brushType": "stroke",
+                "scale": 2.5,
+                "period": 4
+            }
+        }
+    ],
+    "legend": [
+        {
+            "data": [
+                "\u7535\u5f71\u7968\u623f(\u4ebf)"
+            ],
+            "selected": {
+                "\u7535\u5f71\u7968\u623f(\u4ebf)": true
+            },
+            "show": true
+        }
+    ],
+    "tooltip": {
+        "show": true,
+        "trigger": "item",
+        "triggerOn": "mousemove|click",
+        "axisPointer": {
+            "type": "line"
+        },
+        "textStyle": {
+            "fontSize": 14
+        },
+        "borderWidth": 0
+    },
+    "yAxis": [
+        {
+            "show": true,
+            "scale": false,
+            "nameLocation": "end",
+            "nameGap": 15,
+            "gridIndex": 0,
+            "inverse": false,
+            "splitLine": {
+                "show": false,
+                "lineStyle": {
+                    "width": 1,
+                    "opacity": 1,
+                    "curveness": 0,
+                    "type": "solid"
+                }
+            },
+            "data": [
+                "\u901f\u5ea6\u4e0e\u6fc0\u60c57",
+                "\u897f\u8679\u5e02\u9996\u5bcc",
+                "\u901f\u5ea6\u4e0e\u6fc0\u60c58",
+                "\u6211\u4e0d\u662f\u836f\u795e",
+                "\u5510\u4eba\u8857\u63a2\u68482",
+                "\u7f8e\u4eba\u9c7c",
+                "\u7ea2\u6d77\u884c\u52a8",
+                "\u590d\u4ec7\u8005\u8054\u76df4\uff1a\u7ec8\u5c40\u4e4b\u6218",
+                "\u6d41\u6d6a\u5730\u7403",
+                "\u6218\u72fc2"
+            ]
+        }
+    ],
+    "xAxis": [
+        {
+            "show": true,
+            "scale": false,
+            "nameLocation": "end",
+            "nameGap": 15,
+            "gridIndex": 0,
+            "inverse": false,
+            "splitLine": {
+                "show": false,
+                "lineStyle": {
+                    "width": 1,
+                    "opacity": 1,
+                    "curveness": 0,
+                    "type": "solid"
+                }
+            }
+        }
+    ],
+    "title": [
+        {
+            "text": "\u56fd\u5185\u7535\u5f71\u7968\u623fTOP10",
+            "subtext": "\u4e0a\u6b21\u722c\u866b\u65f6\u95f4:2019-05-27 09:10:02  \u7535\u5f71\u91cf:3740"
+        }
+    ]
+};
+        chart_f6378c533b434c6394018d5d74e0107c.setOption(option_f6378c533b434c6394018d5d74e0107c);
+    </script>
+    <div id="word">此图为国内票房TOP10，通过鼠标点击每一格柱状图，将会看见电影详细票房数据，通过上图我们可以直观看出国内票房前十排名，其中十部电影里中国电影占据7部，美国电影仅占3部，且榜单第一名《战狼2》票房是《速度与激情7》的一倍多，说明国产片票房力压好莱坞进口大片。</div>
+<br/>        <div id="41b1d806345b46c6a5c44e073953032f" style="width:900px; height:500px;"></div>
+    <script>
+        var chart_41b1d806345b46c6a5c44e073953032f = echarts.init(
+            document.getElementById('41b1d806345b46c6a5c44e073953032f'), 'white', {renderer: 'canvas'});
+        var option_41b1d806345b46c6a5c44e073953032f = {
+    "color": [
+        "#c23531",
+        "#2f4554",
+        "#61a0a8",
+        "#d48265",
+        "#749f83",
+        "#ca8622",
+        "#bda29a",
+        "#6e7074",
+        "#546570",
+        "#c4ccd3",
+        "#f05b72",
+        "#ef5b9c",
+        "#f47920",
+        "#905a3d",
+        "#fab27b",
+        "#2a5caa",
+        "#444693",
+        "#726930",
+        "#b2d235",
+        "#6d8346",
+        "#ac6767",
+        "#1d953f",
+        "#6950a1",
+        "#918597"
+    ],
+    "series": [
+        {
+            "type": "bar",
+            "name": "\u7535\u5f71\u8bc4\u5206",
+            "data": [
+                9.0,
+                9.0,
+                9.0,
+                9.0,
+                9.0,
+                9.0,
+                9.1,
+                9.1,
+                9.1,
+                9.1,
+                9.2,
+                9.2,
+                9.2,
+                9.2,
+                9.2,
+                9.2,
+                9.3,
+                9.3,
+                9.3,
+                9.4
+            ],
+            "barCategoryGap": "20%",
+            "label": {
+                "show": true,
+                "position": "right",
+                "fontSize": 12
+            },
+            "rippleEffect": {
+                "show": true,
+                "brushType": "stroke",
+                "scale": 2.5,
+                "period": 4
+            }
+        }
+    ],
+    "legend": [
+        {
+            "data": [
+                "\u7535\u5f71\u8bc4\u5206"
+            ],
+            "selected": {
+                "\u7535\u5f71\u8bc4\u5206": true
+            },
+            "show": true
+        }
+    ],
+    "tooltip": {
+        "show": true,
+        "trigger": "item",
+        "triggerOn": "mousemove|click",
+        "axisPointer": {
+            "type": "line"
+        },
+        "textStyle": {
+            "fontSize": 14
+        },
+        "borderWidth": 0
+    },
+    "yAxis": [
+        {
+            "show": true,
+            "scale": false,
+            "nameLocation": "end",
+            "nameGap": 15,
+            "gridIndex": 0,
+            "inverse": false,
+            "splitLine": {
+                "show": false,
+                "lineStyle": {
+                    "width": 1,
+                    "opacity": 1,
+                    "curveness": 0,
+                    "type": "solid"
+                }
+            },
+            "data": [
+                "\u5927\u8bdd\u897f\u6e38\u4e4b\u6708\u5149\u5b9d\u76d2",
+                "\u98de\u5c4b\u73af\u6e38\u8bb0",
+                "\u4f55\u4ee5\u4e3a\u5bb6",
+                "\u5bfb\u68a6\u73af\u6e38\u8bb0",
+                "\u6454\u8de4\u5427\uff01\u7238\u7238",
+                "\u6211\u4e0d\u662f\u836f\u795e",
+                "\u5357\u6d77\u5341\u4e09\u90ce",
+                "\u65e0\u4eba\u77e5\u6653",
+                "\u6d77\u8482\u548c\u7237\u7237",
+                "\u4e03\u9f99\u73e0",
+                "\u4e09\u50bb\u5927\u95f9\u5b9d\u83b1\u575e",
+                "\u89e6\u4e0d\u53ef\u53ca",
+                "\u9f99\u732b",
+                "\u5927\u8bdd\u897f\u6e38\u4e4b\u5927\u5723\u5a36\u4eb2",
+                "\u661f\u9645\u7a7f\u8d8a",
+                "\u75af\u72c2\u52a8\u7269\u57ce",
+                "\u5927\u95f9\u5929\u5bab",
+                "\u6cf0\u5766\u5c3c\u514b\u53f7",
+                "\u76d7\u68a6\u7a7a\u95f4",
+                "\u963f\u7518\u6b63\u4f20"
+            ]
+        }
+    ],
+    "xAxis": [
+        {
+            "show": true,
+            "scale": false,
+            "nameLocation": "end",
+            "nameGap": 15,
+            "gridIndex": 0,
+            "inverse": false,
+            "splitLine": {
+                "show": false,
+                "lineStyle": {
+                    "width": 1,
+                    "opacity": 1,
+                    "curveness": 0,
+                    "type": "solid"
+                }
+            }
+        }
+    ],
+    "title": [
+        {
+            "text": "\u8c46\u74e3\u7535\u5f71\u8bc4\u5206TOP20",
+            "subtext": "\u4e0a\u6b21\u722c\u866b\u65f6\u95f4:2019-05-27 09:10:02  \u7535\u5f71\u91cf:3740"
+        }
+    ]
+};
+        chart_41b1d806345b46c6a5c44e073953032f.setOption(option_41b1d806345b46c6a5c44e073953032f);
+    </script>
+<br/>  
+ <div id="word">此图为豆瓣电影评分TOP20，此图可以帮助电影爱好者筛选高评分的好电影，从上面评分中，我们不难看出中国高评分电影数量占比较少，反而国外高评分电影占比较多，这与上面的高票房排名，形成鲜明反差，中国电影不光要有高票房还需要在内容上深耕，制作出更多能让观众好评的电影。</div>
+
+      <div id="154a19f668ac44439476a791f4c4b804" style="width:900px; height:500px;"></div>
+    <script>
+        var chart_154a19f668ac44439476a791f4c4b804 = echarts.init(
+            document.getElementById('154a19f668ac44439476a791f4c4b804'), 'white', {renderer: 'canvas'});
+        var option_154a19f668ac44439476a791f4c4b804 = {
+    "color": [
+        "#c23531",
+        "#2f4554",
+        "#61a0a8",
+        "#d48265",
+        "#749f83",
+        "#ca8622",
+        "#bda29a",
+        "#6e7074",
+        "#546570",
+        "#c4ccd3",
+        "#f05b72",
+        "#ef5b9c",
+        "#f47920",
+        "#905a3d",
+        "#fab27b",
+        "#2a5caa",
+        "#444693",
+        "#726930",
+        "#b2d235",
+        "#6d8346",
+        "#ac6767",
+        "#1d953f",
+        "#6950a1",
+        "#918597"
+    ],
+    "series": [
+        {
+            "type": "line",
+            "name": "\u7535\u5f71\u7968\u623f\uff08\u4ebf\uff09",
+            "symbolSize": 4,
+            "showSymbol": true,
+            "smooth": true,
+            "step": false,
+            "data": [
+                [
+                    "2010",
+                    95
+                ],
+                [
+                    "2011",
+                    117
+                ],
+                [
+                    "2012",
+                    167
+                ],
+                [
+                    "2013",
+                    210
+                ],
+                [
+                    "2014",
+                    301
+                ],
+                [
+                    "2015",
+                    444
+                ],
+                [
+                    "2016",
+                    457
+                ],
+                [
+                    "2017",
+                    570
+                ],
+                [
+                    "2018",
+                    587
+                ],
+                [
+                    "2019",
+                    251
+                ]
+            ],
+            "label": {
+                "show": true,
+                "position": "top",
+                "fontSize": 12
+            },
+            "lineStyle": {
+                "width": 1,
+                "opacity": 1,
+                "curveness": 0,
+                "type": "solid"
+            },
+            "areaStyle": {
+                "opacity": 0
+            }
+        }
+    ],
+    "legend": [
+        {
+            "data": [
+                "\u7535\u5f71\u7968\u623f\uff08\u4ebf\uff09"
+            ],
+            "selected": {
+                "\u7535\u5f71\u7968\u623f\uff08\u4ebf\uff09": true
+            },
+            "show": true
+        }
+    ],
+    "tooltip": {
+        "show": true,
+        "trigger": "item",
+        "triggerOn": "mousemove|click",
+        "axisPointer": {
+            "type": "line"
+        },
+        "textStyle": {
+            "fontSize": 14
+        },
+        "borderWidth": 0
+    },
+    "yAxis": [
+        {
+            "show": true,
+            "scale": false,
+            "nameLocation": "end",
+            "nameGap": 15,
+            "gridIndex": 0,
+            "inverse": false,
+            "splitLine": {
+                "show": false,
+                "lineStyle": {
+                    "width": 1,
+                    "opacity": 1,
+                    "curveness": 0,
+                    "type": "solid"
+                }
+            }
+        }
+    ],
+    "xAxis": [
+        {
+            "show": true,
+            "scale": false,
+            "nameLocation": "end",
+            "nameGap": 15,
+            "gridIndex": 0,
+            "inverse": false,
+            "splitLine": {
+                "show": false,
+                "lineStyle": {
+                    "width": 1,
+                    "opacity": 1,
+                    "curveness": 0,
+                    "type": "solid"
+                }
+            },
+            "data": [
+                "2010",
+                "2011",
+                "2012",
+                "2013",
+                "2014",
+                "2015",
+                "2016",
+                "2017",
+                "2018",
+                "2019"
+            ]
+        }
+    ],
+    "title": [
+        {
+            "text": "\u8fd1\u5341\u5e74\u56fd\u5185\u7535\u5f71\u7968\u623f\u7edf\u8ba1",
+            "subtext": "\u4e0a\u6b21\u722c\u866b\u65f6\u95f4:2019-05-27 09:10:02  \u7535\u5f71\u91cf:3740"
+        }
+    ]
+};
+        chart_154a19f668ac44439476a791f4c4b804.setOption(option_154a19f668ac44439476a791f4c4b804);
+    </script>
+<br/>   
+ <div id="word">此图为近十年国内票房统计，通过此图我们可以看出中国电影票房近10年的变化情况，（因统计截止日期到2019年5月，所以在2019年票房总量较低），从变化趋势上我们可以看出从2010年到2018年中国电影产业一直处于高速发展期，10年时间国内票房增长超过5倍，从2010年到2015年，中国票房增长量一直以30%的增长率增长，2016年全国总票房为457亿，较2015年444亿票房仅增长3%，增长放缓，但从2017开始，中国电影总票房突破500亿。</div>
+      <div id="5f011aa0a2ce4aa691df62693d34f289" style="width:900px; height:500px;"></div>
+    <script>
+        var chart_5f011aa0a2ce4aa691df62693d34f289 = echarts.init(
+            document.getElementById('5f011aa0a2ce4aa691df62693d34f289'), 'white', {renderer: 'canvas'});
+        var option_5f011aa0a2ce4aa691df62693d34f289 = {
+    "color": [
+        "#c23531",
+        "#2f4554",
+        "#61a0a8",
+        "#d48265",
+        "#749f83",
+        "#ca8622",
+        "#bda29a",
+        "#6e7074",
+        "#546570",
+        "#c4ccd3",
+        "#f05b72",
+        "#ef5b9c",
+        "#f47920",
+        "#905a3d",
+        "#fab27b",
+        "#2a5caa",
+        "#444693",
+        "#726930",
+        "#b2d235",
+        "#6d8346",
+        "#ac6767",
+        "#1d953f",
+        "#6950a1",
+        "#918597"
+    ],
+    "series": [
+        {
+            "type": "line",
+            "name": "\u7535\u5f71\u6570\u91cf",
+            "symbolSize": 4,
+            "showSymbol": true,
+            "smooth": true,
+            "step": false,
+            "data": [
+                [
+                    "2010",
+                    137
+                ],
+                [
+                    "2011",
+                    193
+                ],
+                [
+                    "2012",
+                    185
+                ],
+                [
+                    "2013",
+                    201
+                ],
+                [
+                    "2014",
+                    281
+                ],
+                [
+                    "2015",
+                    362
+                ],
+                [
+                    "2016",
+                    408
+                ],
+                [
+                    "2017",
+                    411
+                ],
+                [
+                    "2018",
+                    520
+                ],
+                [
+                    "2019",
+                    197
+                ]
+            ],
+            "label": {
+                "show": true,
+                "position": "top",
+                "fontSize": 12
+            },
+            "lineStyle": {
+                "width": 1,
+                "opacity": 1,
+                "curveness": 0,
+                "type": "solid"
+            },
+            "areaStyle": {
+                "opacity": 0
+            }
+        }
+    ],
+    "legend": [
+        {
+            "data": [
+                "\u7535\u5f71\u6570\u91cf"
+            ],
+            "selected": {
+                "\u7535\u5f71\u6570\u91cf": true
+            },
+            "show": true
+        }
+    ],
+    "tooltip": {
+        "show": true,
+        "trigger": "item",
+        "triggerOn": "mousemove|click",
+        "axisPointer": {
+            "type": "line"
+        },
+        "textStyle": {
+            "fontSize": 14
+        },
+        "borderWidth": 0
+    },
+    "yAxis": [
+        {
+            "show": true,
+            "scale": false,
+            "nameLocation": "end",
+            "nameGap": 15,
+            "gridIndex": 0,
+            "inverse": false,
+            "splitLine": {
+                "show": false,
+                "lineStyle": {
+                    "width": 1,
+                    "opacity": 1,
+                    "curveness": 0,
+                    "type": "solid"
+                }
+            }
+        }
+    ],
+    "xAxis": [
+        {
+            "show": true,
+            "scale": false,
+            "nameLocation": "end",
+            "nameGap": 15,
+            "gridIndex": 0,
+            "inverse": false,
+            "splitLine": {
+                "show": false,
+                "lineStyle": {
+                    "width": 1,
+                    "opacity": 1,
+                    "curveness": 0,
+                    "type": "solid"
+                }
+            },
+            "data": [
+                "2010",
+                "2011",
+                "2012",
+                "2013",
+                "2014",
+                "2015",
+                "2016",
+                "2017",
+                "2018",
+                "2019"
+            ]
+        }
+    ],
+    "title": [
+        {
+            "text": "\u8fd1\u5341\u5e74\u4e2d\u56fd\u7535\u5f71\u6570\u91cf\u7edf\u8ba1",
+            "subtext": "\u4e0a\u6b21\u722c\u866b\u65f6\u95f4:2019-05-27 17:51:33  \u7535\u5f71\u91cf:3727"
+        }
+    ]
+};
+        chart_5f011aa0a2ce4aa691df62693d34f289.setOption(option_5f011aa0a2ce4aa691df62693d34f289);
+    </script>
+<br/>  
+<div id="word">此图为近十年国内上映电影数量统计，近十年中国上映电影数量稳步增长，在2018年上映数量净增长109部，说明中国电影市场增长潜力巨大，仍有大幅增长趋势。</div>
+      <div id="2dca85e9ac8a49b2892f8ff3d4604a47" style="width:900px; height:500px;"></div>
+    <script>
+        var chart_2dca85e9ac8a49b2892f8ff3d4604a47 = echarts.init(
+            document.getElementById('2dca85e9ac8a49b2892f8ff3d4604a47'), 'white', {renderer: 'canvas'});
+        var option_2dca85e9ac8a49b2892f8ff3d4604a47 = {
+    "color": [
+        "#c23531",
+        "#2f4554",
+        "#61a0a8",
+        "#d48265",
+        "#749f83",
+        "#ca8622",
+        "#bda29a",
+        "#6e7074",
+        "#546570",
+        "#c4ccd3",
+        "#f05b72",
+        "#ef5b9c",
+        "#f47920",
+        "#905a3d",
+        "#fab27b",
+        "#2a5caa",
+        "#444693",
+        "#726930",
+        "#b2d235",
+        "#6d8346",
+        "#ac6767",
+        "#1d953f",
+        "#6950a1",
+        "#918597"
+    ],
+    "series": [
+        {
+            "type": "bar",
+            "name": "\u7535\u5f71\u7968\u623f\uff08\u4ebf\uff09",
+            "data": [
+                34,
+                222,
+                318,
+                605,
+                609,
+                282,
+                36
+            ],
+            "barCategoryGap": "20%",
+            "label": {
+                "show": true,
+                "position": "top",
+                "fontSize": 12
+            },
+            "rippleEffect": {
+                "show": true,
+                "brushType": "stroke",
+                "scale": 2.5,
+                "period": 4
+            }
+        }
+    ],
+    "legend": [
+        {
+            "data": [
+                "\u7535\u5f71\u7968\u623f\uff08\u4ebf\uff09"
+            ],
+            "selected": {
+                "\u7535\u5f71\u7968\u623f\uff08\u4ebf\uff09": true
+            },
+            "show": true
+        }
+    ],
+    "tooltip": {
+        "show": true,
+        "trigger": "item",
+        "triggerOn": "mousemove|click",
+        "axisPointer": {
+            "type": "line"
+        },
+        "textStyle": {
+            "fontSize": 14
+        },
+        "borderWidth": 0
+    },
+    "yAxis": [
+        {
+            "show": true,
+            "scale": false,
+            "nameLocation": "end",
+            "nameGap": 15,
+            "gridIndex": 0,
+            "inverse": false,
+            "splitLine": {
+                "show": false,
+                "lineStyle": {
+                    "width": 1,
+                    "opacity": 1,
+                    "curveness": 0,
+                    "type": "solid"
+                }
+            }
+        }
+    ],
+    "xAxis": [
+        {
+            "show": true,
+            "scale": false,
+            "nameLocation": "end",
+            "nameGap": 15,
+            "gridIndex": 0,
+            "inverse": false,
+            "splitLine": {
+                "show": false,
+                "lineStyle": {
+                    "width": 1,
+                    "opacity": 1,
+                    "curveness": 0,
+                    "type": "solid"
+                }
+            },
+            "data": [
+                "<4\u5206",
+                "4-5",
+                "5-6",
+                "6-7",
+                "7-8",
+                "8-9",
+                "9-10\u5206"
+            ]
+        }
+    ],
+    "title": [
+        {
+            "text": "\u56fd\u5185\u4e0a\u6620\u7535\u5f71\u8bc4\u5206\u4e0e\u7968\u623f\u5173\u7cfb",
+            "subtext": "\u4e0a\u6b21\u722c\u866b\u65f6\u95f4:2019-05-27 09:10:02  \u7535\u5f71\u91cf:3740"
+        }
+    ]
+};
+        chart_2dca85e9ac8a49b2892f8ff3d4604a47.setOption(option_2dca85e9ac8a49b2892f8ff3d4604a47);
+    </script>
+<br/>  
+<div id="word">此图为国内上映电影评分与票房的关系统计，从整体分布上来看电影票房与电影评分属于正态分布，并不是呈现正比例函数分布，高分电影不一定票房就是最高，反而在中间评分段的电影票房较高，其中7-8分的电影票房最高。</div>
+
+      <div id="56d68be8b204491d9b7119570ce6c0ff" style="width:900px; height:500px;"></div>
+    <script>
+        var chart_56d68be8b204491d9b7119570ce6c0ff = echarts.init(
+            document.getElementById('56d68be8b204491d9b7119570ce6c0ff'), 'white', {renderer: 'canvas'});
+        var option_56d68be8b204491d9b7119570ce6c0ff = {
+    "color": [
+        "#c23531",
+        "#2f4554",
+        "#61a0a8",
+        "#d48265",
+        "#749f83",
+        "#ca8622",
+        "#bda29a",
+        "#6e7074",
+        "#546570",
+        "#c4ccd3",
+        "#f05b72",
+        "#ef5b9c",
+        "#f47920",
+        "#905a3d",
+        "#fab27b",
+        "#2a5caa",
+        "#444693",
+        "#726930",
+        "#b2d235",
+        "#6d8346",
+        "#ac6767",
+        "#1d953f",
+        "#6950a1",
+        "#918597"
+    ],
+    "series": [
+        {
+            "type": "bar",
+            "name": "\u7535\u5f71\u6570\u91cf",
+            "data": [
+                21,
+                114,
+                292,
+                681,
+                1122,
+                874,
+                152
+            ],
+            "barCategoryGap": "20%",
+            "label": {
+                "show": true,
+                "position": "top",
+                "fontSize": 12
+            },
+            "rippleEffect": {
+                "show": true,
+                "brushType": "stroke",
+                "scale": 2.5,
+                "period": 4
+            }
+        }
+    ],
+    "legend": [
+        {
+            "data": [
+                "\u7535\u5f71\u6570\u91cf"
+            ],
+            "selected": {
+                "\u7535\u5f71\u6570\u91cf": true
+            },
+            "show": true
+        }
+    ],
+    "tooltip": {
+        "show": true,
+        "trigger": "item",
+        "triggerOn": "mousemove|click",
+        "axisPointer": {
+            "type": "line"
+        },
+        "textStyle": {
+            "fontSize": 14
+        },
+        "borderWidth": 0
+    },
+    "yAxis": [
+        {
+            "show": true,
+            "scale": false,
+            "nameLocation": "end",
+            "nameGap": 15,
+            "gridIndex": 0,
+            "inverse": false,
+            "splitLine": {
+                "show": false,
+                "lineStyle": {
+                    "width": 1,
+                    "opacity": 1,
+                    "curveness": 0,
+                    "type": "solid"
+                }
+            }
+        }
+    ],
+    "xAxis": [
+        {
+            "show": true,
+            "scale": false,
+            "nameLocation": "end",
+            "nameGap": 15,
+            "gridIndex": 0,
+            "inverse": false,
+            "splitLine": {
+                "show": false,
+                "lineStyle": {
+                    "width": 1,
+                    "opacity": 1,
+                    "curveness": 0,
+                    "type": "solid"
+                }
+            },
+            "data": [
+                "<4\u5206",
+                "4-5",
+                "5-6",
+                "6-7",
+                "7-8",
+                "8-9",
+                "9-10\u5206"
+            ]
+        }
+    ],
+    "title": [
+        {
+            "text": "\u56fd\u5185\u4e0a\u6620\u7535\u5f71\u8bc4\u5206\u4e0e\u6570\u91cf\u5173\u7cfb",
+            "subtext": "\u4e0a\u6b21\u722c\u866b\u65f6\u95f4:2019-05-22 07:52:42  \u524d874\u90e8\u7535\u5f71"
+        }
+    ]
+};
+        chart_56d68be8b204491d9b7119570ce6c0ff.setOption(option_56d68be8b204491d9b7119570ce6c0ff);
+    </script>
+<br/>   
+<div id="word">此图为国内上映电影评分与上映数量的关系统计，从整体分布上来看电影上映数量与电影评分关系和上面票房关系同样属于正态分布，低分和高分电影占比都较少，反而在中间评分段的电影数量较高，这也印证了上面的分析，中间评分段票房效果更好。</div>
+
+     <div id="410c38a50e744870bbeb60f4a186f734" style="width:900px; height:500px;"></div>
+    <script>
+        var chart_410c38a50e744870bbeb60f4a186f734 = echarts.init(
+            document.getElementById('410c38a50e744870bbeb60f4a186f734'), 'white', {renderer: 'canvas'});
+        var option_410c38a50e744870bbeb60f4a186f734 = {
+    "color": [
+        "#c23531",
+        "#2f4554",
+        "#61a0a8",
+        "#d48265",
+        "#749f83",
+        "#ca8622",
+        "#bda29a",
+        "#6e7074",
+        "#546570",
+        "#c4ccd3",
+        "#f05b72",
+        "#ef5b9c",
+        "#f47920",
+        "#905a3d",
+        "#fab27b",
+        "#2a5caa",
+        "#444693",
+        "#726930",
+        "#b2d235",
+        "#6d8346",
+        "#ac6767",
+        "#1d953f",
+        "#6950a1",
+        "#918597"
+    ],
+    "series": [
+        {
+            "type": "pie",
+            "name": "\u7535\u5f71\u6570\u91cf",
+            "data": [
+                {
+                    "name": "\u5267\u60c5",
+                    "value": 2376
+                },
+                {
+                    "name": "\u559c\u5267",
+                    "value": 1245
+                },
+                {
+                    "name": "\u60ca\u609a",
+                    "value": 1112
+                },
+                {
+                    "name": "\u7231\u60c5",
+                    "value": 1025
+                },
+                {
+                    "name": "\u52a8\u4f5c",
+                    "value": 1018
+                },
+                {
+                    "name": "\u60ac\u7591",
+                    "value": 693
+                },
+                {
+                    "name": "\u72af\u7f6a",
+                    "value": 643
+                },
+                {
+                    "name": "\u6050\u6016",
+                    "value": 609
+                },
+                {
+                    "name": "\u79d1\u5e7b",
+                    "value": 553
+                },
+                {
+                    "name": "\u5176\u4ed6",
+                    "value": 681
+                }
+            ],
+            "radius": [
+                "0%",
+                "75%"
+            ],
+            "center": [
+                "50%",
+                "50%"
+            ],
+            "label": {
+                "show": true,
+                "position": "top",
+                "fontSize": 12,
+                "formatter": "{b}: {d}"
+            },
+            "rippleEffect": {
+                "show": true,
+                "brushType": "stroke",
+                "scale": 2.5,
+                "period": 4
+            }
+        }
+    ],
+    "legend": [
+        {
+            "data": [
+                "\u5267\u60c5",
+                "\u559c\u5267",
+                "\u60ca\u609a",
+                "\u7231\u60c5",
+                "\u52a8\u4f5c",
+                "\u60ac\u7591",
+                "\u72af\u7f6a",
+                "\u6050\u6016",
+                "\u79d1\u5e7b",
+                "\u5176\u4ed6"
+            ],
+            "selected": {},
+            "show": true
+        }
+    ],
+    "tooltip": {
+        "show": true,
+        "trigger": "item",
+        "triggerOn": "mousemove|click",
+        "axisPointer": {
+            "type": "line"
+        },
+        "textStyle": {
+            "fontSize": 14
+        },
+        "borderWidth": 0
+    },
+    "title": [
+        {
+            "text": "\u7535\u5f71\u7c7b\u578b\u7edf\u8ba1",
+            "subtext": "\u4e0a\u6b21\u722c\u866b\u65f6\u95f4:2019-05-27 09:10:02  \u7535\u5f71\u91cf:3740"
+        }
+    ]
+};
+        chart_410c38a50e744870bbeb60f4a186f734.setOption(option_410c38a50e744870bbeb60f4a186f734);
+    </script>
+<br/>  
+<div id="word">此图为国内上映不同类型电影数量统计，通过扇形图清晰展示出不同类型电影数量占比情况，其中剧情片占比最高（占比23.87%），喜剧片，动作片，爱情片占比次之，其他类型电影占比都不超过10%。
+</div>      <div id="5e33a6177e7443558635faf99f6f3a9e" style="width:900px; height:500px;"></div>
+    <script>
+        var chart_5e33a6177e7443558635faf99f6f3a9e = echarts.init(
+            document.getElementById('5e33a6177e7443558635faf99f6f3a9e'), 'white', {renderer: 'canvas'});
+        var option_5e33a6177e7443558635faf99f6f3a9e = {
+    "color": [
+        "#c23531",
+        "#2f4554",
+        "#61a0a8",
+        "#d48265",
+        "#749f83",
+        "#ca8622",
+        "#bda29a",
+        "#6e7074",
+        "#546570",
+        "#c4ccd3",
+        "#f05b72",
+        "#ef5b9c",
+        "#f47920",
+        "#905a3d",
+        "#fab27b",
+        "#2a5caa",
+        "#444693",
+        "#726930",
+        "#b2d235",
+        "#6d8346",
+        "#ac6767",
+        "#1d953f",
+        "#6950a1",
+        "#918597"
+    ],
+    "series": [
+        {
+            "type": "pie",
+            "name": "\u7535\u5f71\u7968\u623f\uff08\u4ebf\uff09",
+            "data": [
+                {
+                    "name": "\u5267\u60c5",
+                    "value": 143.38
+                },
+                {
+                    "name": "\u559c\u5267",
+                    "value": 440.1
+                },
+                {
+                    "name": "\u52a8\u4f5c",
+                    "value": 484.97
+                },
+                {
+                    "name": "\u7231\u60c5",
+                    "value": 9.42
+                },
+                {
+                    "name": "\u79d1\u5e7b",
+                    "value": 46.15
+                },
+                {
+                    "name": "\u60ac\u7591",
+                    "value": 10.01
+                }
+            ],
+            "radius": [
+                "0%",
+                "75%"
+            ],
+            "center": [
+                "50%",
+                "50%"
+            ],
+            "label": {
+                "show": true,
+                "position": "top",
+                "fontSize": 12,
+                "formatter": "{b}: {d}"
+            },
+            "rippleEffect": {
+                "show": true,
+                "brushType": "stroke",
+                "scale": 2.5,
+                "period": 4
+            }
+        }
+    ],
+    "legend": [
+        {
+            "data": [
+                "\u5267\u60c5",
+                "\u559c\u5267",
+                "\u52a8\u4f5c",
+                "\u7231\u60c5",
+                "\u79d1\u5e7b",
+                "\u60ac\u7591"
+            ],
+            "selected": {},
+            "show": true
+        }
+    ],
+    "tooltip": {
+        "show": true,
+        "trigger": "item",
+        "triggerOn": "mousemove|click",
+        "axisPointer": {
+            "type": "line"
+        },
+        "textStyle": {
+            "fontSize": 14
+        },
+        "borderWidth": 0
+    },
+    "title": [
+        {
+            "text": "\u56fd\u5185\u4e0a\u6620\u7535\u5f71\u7968\u623f\u4e0e\u7c7b\u578b\u7edf\u8ba1",
+            "subtext": "\u4e0a\u6b21\u722c\u866b\u65f6\u95f4:2019-05-27 09:10:02  \u7535\u5f71\u91cf:3740"
+        }
+    ]
+};
+        chart_5e33a6177e7443558635faf99f6f3a9e.setOption(option_5e33a6177e7443558635faf99f6f3a9e);
+    </script>
+<br/>   
+<div id="word">此图为国内上映不同类型电影票房统计，通过扇形图清晰展示出不同类型电影票房占比情况，与上图占比不同的是中国观众更远看喜剧，动作类的电影，剧情电影次之。
+</div> 
+
+     <div id="28747bc1fc1f4aceb123fdb7360b6a9f" style="width:900px; height:500px;"></div>
+    <script>
+        var chart_28747bc1fc1f4aceb123fdb7360b6a9f = echarts.init(
+            document.getElementById('28747bc1fc1f4aceb123fdb7360b6a9f'), 'white', {renderer: 'canvas'});
+        var option_28747bc1fc1f4aceb123fdb7360b6a9f = {
+    "color": [
+        "#c23531",
+        "#2f4554",
+        "#61a0a8",
+        "#d48265",
+        "#749f83",
+        "#ca8622",
+        "#bda29a",
+        "#6e7074",
+        "#546570",
+        "#c4ccd3",
+        "#f05b72",
+        "#ef5b9c",
+        "#f47920",
+        "#905a3d",
+        "#fab27b",
+        "#2a5caa",
+        "#444693",
+        "#726930",
+        "#b2d235",
+        "#6d8346",
+        "#ac6767",
+        "#1d953f",
+        "#6950a1",
+        "#918597"
+    ],
+    "series": [
+        {
+            "type": "bar",
+            "name": "\u7535\u5f71\u6570\u91cf",
+            "data": [
+                419,
+                647,
+                652,
+                475,
+                341,
+                191,
+                199
+            ],
+            "barCategoryGap": "20%",
+            "label": {
+                "show": true,
+                "position": "top",
+                "fontSize": 12
+            },
+            "rippleEffect": {
+                "show": true,
+                "brushType": "stroke",
+                "scale": 2.5,
+                "period": 4
+            }
+        }
+    ],
+    "legend": [
+        {
+            "data": [
+                "\u7535\u5f71\u6570\u91cf"
+            ],
+            "selected": {
+                "\u7535\u5f71\u6570\u91cf": true
+            },
+            "show": true
+        }
+    ],
+    "tooltip": {
+        "show": true,
+        "trigger": "item",
+        "triggerOn": "mousemove|click",
+        "axisPointer": {
+            "type": "line"
+        },
+        "textStyle": {
+            "fontSize": 14
+        },
+        "borderWidth": 0
+    },
+    "yAxis": [
+        {
+            "show": true,
+            "scale": false,
+            "nameLocation": "end",
+            "nameGap": 15,
+            "gridIndex": 0,
+            "inverse": false,
+            "splitLine": {
+                "show": false,
+                "lineStyle": {
+                    "width": 1,
+                    "opacity": 1,
+                    "curveness": 0,
+                    "type": "solid"
+                }
+            }
+        }
+    ],
+    "xAxis": [
+        {
+            "show": true,
+            "scale": false,
+            "nameLocation": "end",
+            "nameGap": 15,
+            "gridIndex": 0,
+            "inverse": false,
+            "splitLine": {
+                "show": false,
+                "lineStyle": {
+                    "width": 1,
+                    "opacity": 1,
+                    "curveness": 0,
+                    "type": "solid"
+                }
+            },
+            "data": [
+                "<90min",
+                "90-100",
+                "100-110",
+                "110-120",
+                "120-130",
+                "130-140",
+                ">140min"
+            ]
+        }
+    ],
+    "title": [
+        {
+            "text": "\u56fd\u5185\u4e0a\u6620\u7535\u5f71\u65f6\u957f\u4e0e\u6570\u91cf\u7edf\u8ba1",
+            "subtext": "\u4e0a\u6b21\u722c\u866b\u65f6\u95f4:2019-05-27 09:10:02  \u7535\u5f71\u91cf:3740"
+        }
+    ]
+};
+        chart_28747bc1fc1f4aceb123fdb7360b6a9f.setOption(option_28747bc1fc1f4aceb123fdb7360b6a9f);
+    </script>
+<br/>  <div id="word">此图为国内上映电影时常与数量的统计，通过柱状图清晰展示出，电影时长与电影上映数量的相关关系，从上图我们可知，时长在90min-120min的上映电影最多，电影时长过短或过长都不太受电影制片方喜欢。
+</div>       <div id="031633c31cd942eba966b18840539795" style="width:900px; height:500px;"></div>
+    <script>
+        var chart_031633c31cd942eba966b18840539795 = echarts.init(
+            document.getElementById('031633c31cd942eba966b18840539795'), 'white', {renderer: 'canvas'});
+        var option_031633c31cd942eba966b18840539795 = {
+    "color": [
+        "#c23531",
+        "#2f4554",
+        "#61a0a8",
+        "#d48265",
+        "#749f83",
+        "#ca8622",
+        "#bda29a",
+        "#6e7074",
+        "#546570",
+        "#c4ccd3",
+        "#f05b72",
+        "#ef5b9c",
+        "#f47920",
+        "#905a3d",
+        "#fab27b",
+        "#2a5caa",
+        "#444693",
+        "#726930",
+        "#b2d235",
+        "#6d8346",
+        "#ac6767",
+        "#1d953f",
+        "#6950a1",
+        "#918597"
+    ],
+    "series": [
+        {
+            "type": "bar",
+            "name": "\u7535\u5f71\u7968\u623f\uff08\u4ebf\uff09",
+            "data": [
+                73,
+                236,
+                443,
+                513,
+                387,
+                301,
+                151
+            ],
+            "barCategoryGap": "20%",
+            "label": {
+                "show": true,
+                "position": "top",
+                "fontSize": 12
+            },
+            "rippleEffect": {
+                "show": true,
+                "brushType": "stroke",
+                "scale": 2.5,
+                "period": 4
+            }
+        }
+    ],
+    "legend": [
+        {
+            "data": [
+                "\u7535\u5f71\u7968\u623f\uff08\u4ebf\uff09"
+            ],
+            "selected": {
+                "\u7535\u5f71\u7968\u623f\uff08\u4ebf\uff09": true
+            },
+            "show": true
+        }
+    ],
+    "tooltip": {
+        "show": true,
+        "trigger": "item",
+        "triggerOn": "mousemove|click",
+        "axisPointer": {
+            "type": "line"
+        },
+        "textStyle": {
+            "fontSize": 14
+        },
+        "borderWidth": 0
+    },
+    "yAxis": [
+        {
+            "show": true,
+            "scale": false,
+            "nameLocation": "end",
+            "nameGap": 15,
+            "gridIndex": 0,
+            "inverse": false,
+            "splitLine": {
+                "show": false,
+                "lineStyle": {
+                    "width": 1,
+                    "opacity": 1,
+                    "curveness": 0,
+                    "type": "solid"
+                }
+            }
+        }
+    ],
+    "xAxis": [
+        {
+            "show": true,
+            "scale": false,
+            "nameLocation": "end",
+            "nameGap": 15,
+            "gridIndex": 0,
+            "inverse": false,
+            "splitLine": {
+                "show": false,
+                "lineStyle": {
+                    "width": 1,
+                    "opacity": 1,
+                    "curveness": 0,
+                    "type": "solid"
+                }
+            },
+            "data": [
+                "<90min",
+                "90-100",
+                "100-110",
+                "110-120",
+                "120-130",
+                "130-140",
+                ">140min"
+            ]
+        }
+    ],
+    "title": [
+        {
+            "text": "\u56fd\u5185\u4e0a\u6620\u7535\u5f71\u65f6\u957f\u4e0e\u7968\u623f\u7edf\u8ba1",
+            "subtext": "\u4e0a\u6b21\u722c\u866b\u65f6\u95f4:2019-05-27 09:10:02  \u7535\u5f71\u91cf:3740"
+        }
+    ]
+};
+        chart_031633c31cd942eba966b18840539795.setOption(option_031633c31cd942eba966b18840539795);
+    </script>
+<br/>   <div id="word">此图为国内上映电影时常与票房的统计，通过柱状图清晰展示出，电影时长与电影上映票房的相关关系，从上图我们可知，时长在100min-130min的上映电影票房收益最多，反映出观众更喜欢接受这个时间段内的电影。
+
+</div>      <div id="c5aeb1afbda24bcb9b5e8a7181e280fc" style="width:900px; height:500px;"></div>
+    <script>
+        var chart_c5aeb1afbda24bcb9b5e8a7181e280fc = echarts.init(
+            document.getElementById('c5aeb1afbda24bcb9b5e8a7181e280fc'), 'white', {renderer: 'canvas'});
+        var option_c5aeb1afbda24bcb9b5e8a7181e280fc = {
+    "color": [
+        "#c23531",
+        "#2f4554",
+        "#61a0a8",
+        "#d48265",
+        "#749f83",
+        "#ca8622",
+        "#bda29a",
+        "#6e7074",
+        "#546570",
+        "#c4ccd3",
+        "#f05b72",
+        "#ef5b9c",
+        "#f47920",
+        "#905a3d",
+        "#fab27b",
+        "#2a5caa",
+        "#444693",
+        "#726930",
+        "#b2d235",
+        "#6d8346",
+        "#ac6767",
+        "#1d953f",
+        "#6950a1",
+        "#918597"
+    ],
+    "series": [
+        {
+            "type": "wordCloud",
+            "shape": "circle",
+            "rotationRange": [
+                -90,
+                90
+            ],
+            "rotationStep": 45,
+            "girdSize": 20,
+            "sizeRange": [
+                20,
+                100
+            ],
+            "data": [
+                {
+                    "name": "\u7535\u5f71",
+                    "value": 10000,
+                    "textStyle": {
+                        "normal": {
+                            "color": "rgb(27,151,30)"
+                        }
+                    }
+                },
+                {
+                    "name": "\u52a8\u4f5c",
+                    "value": 6181,
+                    "textStyle": {
+                        "normal": {
+                            "color": "rgb(95,91,135)"
+                        }
+                    }
+                },
+                {
+                    "name": "\u559c\u5267",
+                    "value": 4386,
+                    "textStyle": {
+                        "normal": {
+                            "color": "rgb(52,138,109)"
+                        }
+                    }
+                },
+                {
+                    "name": "\u5267\u60c5",
+                    "value": 4055,
+                    "textStyle": {
+                        "normal": {
+                            "color": "rgb(118,112,24)"
+                        }
+                    }
+                },
+                {
+                    "name": "\u79d1\u5e7b",
+                    "value": 2467,
+                    "textStyle": {
+                        "normal": {
+                            "color": "rgb(53,2,126)"
+                        }
+                    }
+                },
+                {
+                    "name": "\u4e2d\u56fd\u7535\u5f71",
+                    "value": 2244,
+                    "textStyle": {
+                        "normal": {
+                            "color": "rgb(150,71,132)"
+                        }
+                    }
+                },
+                {
+                    "name": "\u7f8e\u56fd",
+                    "value": 1868,
+                    "textStyle": {
+                        "normal": {
+                            "color": "rgb(46,142,56)"
+                        }
+                    }
+                },
+                {
+                    "name": "\u6218\u72fc",
+                    "value": 1484,
+                    "textStyle": {
+                        "normal": {
+                            "color": "rgb(48,143,99)"
+                        }
+                    }
+                },
+                {
+                    "name": "3D",
+                    "value": 1112,
+                    "textStyle": {
+                        "normal": {
+                            "color": "rgb(132,95,156)"
+                        }
+                    }
+                },
+                {
+                    "name": "\u9ad8\u7968\u623f",
+                    "value": 865,
+                    "textStyle": {
+                        "normal": {
+                            "color": "rgb(132,129,132)"
+                        }
+                    }
+                },
+                {
+                    "name": "\u6545\u4e8b",
+                    "value": 847,
+                    "textStyle": {
+                        "normal": {
+                            "color": "rgb(32,132,55)"
+                        }
+                    }
+                },
+                {
+                    "name": "\u5434\u4eac",
+                    "value": 582,
+                    "textStyle": {
+                        "normal": {
+                            "color": "rgb(79,61,94)"
+                        }
+                    }
+                },
+                {
+                    "name": "\u5f20\u827a\u8c0b",
+                    "value": 555,
+                    "textStyle": {
+                        "normal": {
+                            "color": "rgb(136,96,73)"
+                        }
+                    }
+                },
+                {
+                    "name": "\u60ca\u609a",
+                    "value": 550,
+                    "textStyle": {
+                        "normal": {
+                            "color": "rgb(66,34,57)"
+                        }
+                    }
+                },
+                {
+                    "name": "\u590d\u4ec7\u8005\u8054\u76df4",
+                    "value": 462,
+                    "textStyle": {
+                        "normal": {
+                            "color": "rgb(121,90,160)"
+                        }
+                    }
+                },
+                {
+                    "name": "\u8bc4\u5206",
+                    "value": 366,
+                    "textStyle": {
+                        "normal": {
+                            "color": "rgb(67,39,132)"
+                        }
+                    }
+                },
+                {
+                    "name": "English",
+                    "value": 360,
+                    "textStyle": {
+                        "normal": {
+                            "color": "rgb(21,22,93)"
+                        }
+                    }
+                },
+                {
+                    "name": "\u9999\u6e2f",
+                    "value": 282,
+                    "textStyle": {
+                        "normal": {
+                            "color": "rgb(113,32,78)"
+                        }
+                    }
+                }
+            ]
+        }
+    ],
+    "legend": [
+        {
+            "data": [],
+            "selected": {},
+            "show": true
+        }
+    ],
+    "tooltip": {
+        "show": true,
+        "trigger": "item",
+        "triggerOn": "mousemove|click",
+        "axisPointer": {
+            "type": "line"
+        },
+        "textStyle": {
+            "fontSize": 14
+        },
+        "borderWidth": 0
+    },
+    "title": [
+        {
+            "text": "\u56fd\u5185\u4e0a\u6620\u7535\u5f71\u5b57\u4e91",
+            "subtext": "\u4e0a\u6b21\u722c\u866b\u65f6\u95f4:2019-05-27 09:10:02  \u7535\u5f71\u91cf:3740"
+        }
+    ]
+};
+        chart_c5aeb1afbda24bcb9b5e8a7181e280fc.setOption(option_c5aeb1afbda24bcb9b5e8a7181e280fc);
+    </script>
+<br/>
+<div id="word">此图为电影关键词的字云，字体越大，说明相关关键词占比越高，这是我所提取的电影数据中关键词出现频率最高的一些词，也可以直观反映出关于电影的热点话题。
+	
+</div>
+
+<h2 style="color: #000">写在最后</h2>
+
+<div id="word">
+	以上所做出的分析只是研究电影票房与其他影响因素的相关性分析，不能代表影响电影票房的决定性因素，对电影票房的影响因素还与导演的拍摄风格，拍摄技术，电影风格，主演相关。
+此次中国电影可视化报告是在爬取中国电影票房数据库网和豆瓣电影的电影数据上制作而成，所有数据源均为互联网上公开数据，此项目也仅由个人独立完成，通过项目完成了对整个技术实现过程的学习，主要用于个人的学术研究，通过此次电影可视化分析项目，也希望能对电影爱好者，电影从业人员提供参考。
+</div>
+
+
+</div>
+
+
+
+<!--  以下为不可修改部分-->
+<div id="footer">
+        <p>Copyright © 2019 <a href="http:www.ixinhai.cn" target="_blank">郭新海</a>. All Rights Reserved.</p>
+    </div>
+
+</body>
+</html>
